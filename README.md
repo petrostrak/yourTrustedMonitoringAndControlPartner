@@ -106,7 +106,29 @@ GET /ptlist?period=1w&tz=Europe/Athens&t1=20180214T204603Z&t2=20211115T123456Z
 }
 ```
 
+#### Run without Docker:
 In the root directory of the project, type the following to fire up the server (don't forget to add port to listen to):
 ```
 ./run.sh 
+```
+
+#### Run with Docker:
+In the root directory of the project (where the dockerfile exists):
+```
+docker build --tag docker-inaccess .
+```
+
+To view local images (docker-inaccess image should be here):
+```
+docker images
+```
+To run the docker-inaccess image:
+```
+docker run -p 8080:8080 docker-inaccess 8080
+```
+It's handy to remember that in the -p 8080:8080 command line option, the order for this operation is `-p HOST_PORT:CONTAINER_PORT`
+
+In case you want to delete the image:
+```
+docker image rm -f docker-inaccess
 ```
