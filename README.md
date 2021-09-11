@@ -105,3 +105,8 @@ GET /ptlist?period=1w&tz=Europe/Athens&t1=20180214T204603Z&t2=20211115T123456Z
 "desc": "Unsupported period"
 }
 ```
+
+In the root directory of the project, type the following to fire up the server (don't forget to add port to listen to):
+```
+./run.sh 
+```
