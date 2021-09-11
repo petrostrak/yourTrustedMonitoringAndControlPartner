@@ -2,10 +2,12 @@
 #### Golang software engineer
 ##### Description
 The goal of this assignment is the implementation of a `JSON/HTTP` service, in golang, that returns the matching timestamps of a periodic task.
+
 A periodic task is described by the following properties:
-• Period (every hour, every day, ...)
-• Invocation point (where inside the period should be invoked)
-• Timezone (days/months/years are timezone-depended)
+* Period (every hour, every day, ...)
+* Invocation point (where inside the period should be invoked)
+* Timezone (days/months/years are timezone-depended)
+
 The service should return all matching timestamps of a periodic task (ptlist) between 2 points in time (t1, t2). t1, t2 and the entries of ptlist are in UTC with seconds accuracy, in the following form: `20060102T150405Z`
 The supported periods should be: `1h`, `1d`, `1mo`, `1y`. The invocation timestamp should be at the start of the period (e.g. for 1h period a matching timestamp is considered the `20210729T010000Z`). The service should accept as command-line argument the listen `addr/port`. On success, HTTP status `200 OK` and a JSON array with all matching timestamps, in `UTC`, for the requested period should be returned. On failure, HTTP status `400` and a JSON object with appropriate fields should be returned.
 Examples
