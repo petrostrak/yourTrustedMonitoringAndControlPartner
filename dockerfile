@@ -20,4 +20,4 @@ FROM golang:1.17-bullseye
 
 COPY --from=builder /app/app .
 
-CMD [ "/docker-inaccess" ]
+ENTRYPOINT [ "/run.sh" ]
