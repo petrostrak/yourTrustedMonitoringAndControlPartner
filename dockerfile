@@ -1,23 +1,32 @@
-# syntax=docker/dockerfile:1
-FROM golang as builder
+FROM golang:alpine
 
-ENV GO111MODULE=on
+# Set necessary environmet variables needed for our image
+ENV GO111MODULE=on \
+    CGO_ENABLED=0 \
+    GOOS=linux \
+    GOARCH=amd64
 
-# Create a directory inside the image that we are building
-WORKDIR /app
+# Move to working directory /build
+WORKDIR /build
 
-# Copy our source code into the image
+# Copy and download dependency using go mod
+COPY go.mod .
+RUN go mod download
+
+# Copy the code into the container
 COPY . .
 
-# Download necessary Go modules
-COPY go.mod ./
+# Build the application
+RUN go build -o main .
 
-# Compile application
-RUN go build -o /app/
+# Move to /dist directory as the place for resulting binary folder
+WORKDIR /dist
 
-FROM golang:1.17-bullseye
+# Copy binary from build to main folder
+RUN cp /build/main .
 
+# Export necessary port
+EXPOSE 8080
 
-COPY --from=builder /app/app .
-
-ENTRYPOINT [ "/run.sh" ]
+# Command to run when starting the container
+ENTRYPOINT ["/dist/main"]
