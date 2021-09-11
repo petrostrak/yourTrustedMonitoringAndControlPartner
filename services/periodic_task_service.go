@@ -1,8 +1,8 @@
 package services
 
 import (
-	"petrostrak/yourTrustedMonitoringAndControlPartner/dao"
-	"petrostrak/yourTrustedMonitoringAndControlPartner/utils"
+	"github.com/petrostrak/yourTrustedMonitoringAndControlPartner/dao"
+	"github.com/petrostrak/yourTrustedMonitoringAndControlPartner/utils"
 )
 
 type periodicTaskService struct{}

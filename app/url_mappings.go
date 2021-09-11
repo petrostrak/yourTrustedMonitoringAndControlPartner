@@ -1,6 +1,6 @@
 package app
 
-import "petrostrak/yourTrustedMonitoringAndControlPartner/controllers"
+import "github.com/petrostrak/yourTrustedMonitoringAndControlPartner/controllers"
 
 func mapURLs() {
 	mux.HandleFunc("/ptlist", controllers.GetPeriodicTask)

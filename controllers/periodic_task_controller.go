@@ -3,10 +3,11 @@ package controllers
 import (
 	"fmt"
 	"net/http"
-	"petrostrak/yourTrustedMonitoringAndControlPartner/dao"
-	"petrostrak/yourTrustedMonitoringAndControlPartner/utils"
 
 	"time"
+
+	"github.com/petrostrak/yourTrustedMonitoringAndControlPartner/dao"
+	"github.com/petrostrak/yourTrustedMonitoringAndControlPartner/utils"
 )
 
 const (

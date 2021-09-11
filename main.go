@@ -1,6 +1,6 @@
 package main
 
-import "petrostrak/yourTrustedMonitoringAndControlPartner/app"
+import "github.com/petrostrak/yourTrustedMonitoringAndControlPartner/app"
 
 func main() {
 	app.StartApp()

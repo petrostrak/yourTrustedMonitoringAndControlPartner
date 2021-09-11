@@ -3,7 +3,8 @@ package dao
 import (
 	"fmt"
 	"net/http"
-	"petrostrak/yourTrustedMonitoringAndControlPartner/utils"
+
+	"github.com/petrostrak/yourTrustedMonitoringAndControlPartner/utils"
 )
 
 var (
