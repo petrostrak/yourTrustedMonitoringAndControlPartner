@@ -42,6 +42,11 @@ func GetPeriodicTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// pd, err := services.PeriodicTaskService.GetAllPeriodicTasks(t1, t2, period, tz)
+	// if err != nil {
+	// 	utils.RespondError(w, err)
+	// }
+
 	pd := &dao.PeriodicTask{
 		Period:   p,
 		Timezone: tz,
