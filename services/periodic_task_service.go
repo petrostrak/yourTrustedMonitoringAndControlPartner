@@ -12,8 +12,8 @@ var (
 )
 
 // GetInvocationPoints receives the invocation points as parameters from the controller
-func (ps *periodicTaskService) GetAllPeriodicTasks(t1, t2, period, tz string) (*dao.PeriodicTask, *utils.ApplicationError) {
+func (ps *periodicTaskService) GetAllTimestamps(t1, t2, period, tz string) (*dao.PeriodicTask, *utils.ApplicationError) {
 	// then in calls DAO to check in the DB
 	// and returns the results to controller
-	return dao.PeriodicTaskDao.GetAllPeriodicTasks(t1, t2, period, tz)
+	return dao.PeriodicTaskDao.GetAllTimestamps(t1, t2, period, tz)
 }

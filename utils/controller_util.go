@@ -14,6 +14,7 @@ type respond struct {
 	Body   interface{}
 }
 
+// Respond is the function that returns a successful JSON
 func Respond(w http.ResponseWriter, status int, body interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -28,6 +29,7 @@ func Respond(w http.ResponseWriter, status int, body interface{}) {
 
 }
 
+// RespondError is the function that returns an ApplicationError
 func RespondError(w http.ResponseWriter, err *ApplicationError) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -41,13 +43,14 @@ func RespondError(w http.ResponseWriter, err *ApplicationError) {
 	}
 }
 
-// helper function to check if invocation points are in the correct format
+// CheckInvocationPoint checks if invocation points are in the correct format with the use
+// of a regular expression
 // ^[1-9]\d{3}\d{2}\d{2}T\d{2}\d{2}\d{2}Z$
 func CheckInvocationPoint(t string) bool {
 	return regexp.MustCompile(`^[1-9]\d{3}\d{2}\d{2}T\d{2}\d{2}\d{2}Z$`).MatchString(t)
 }
 
-// checks if invocation points are in the correct time sequence
+// CheckInvocationSequence checks if invocation points are in the correct time sequence
 func CheckInvocationSequence(t1, t2, layout string) bool {
 	ts1, err := time.Parse(layout, t1)
 	if err != nil {
@@ -58,9 +61,11 @@ func CheckInvocationSequence(t1, t2, layout string) bool {
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	return ts1.Before(ts2)
 }
 
+// ParseStringToTime receives a string and parses it to time.Time
 func ParseStringToTime(layout, invocationPoint string) (*time.Time, *ApplicationError) {
 	t1, parseErr := time.Parse(layout, invocationPoint)
 	if parseErr != nil {

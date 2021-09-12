@@ -11,8 +11,9 @@ var (
 	PeriodicTaskDao periodicTaskDaoService
 )
 
+// periodicTaskDaoService is the interface for the periodic task
 type periodicTaskDaoService interface {
-	GetAllPeriodicTasks(string, string, string, string) (*PeriodicTask, *utils.ApplicationError)
+	GetAllTimestamps(string, string, string, string) (*PeriodicTask, *utils.ApplicationError)
 }
 
 func init() {
@@ -21,7 +22,7 @@ func init() {
 
 type periodicTaskDao struct{}
 
-func (pd *periodicTaskDao) GetAllPeriodicTasks(t1, t2, period, tz string) (*PeriodicTask, *utils.ApplicationError) {
+func (pd *periodicTaskDao) GetAllTimestamps(t1, t2, period, tz string) (*PeriodicTask, *utils.ApplicationError) {
 	// Logic to implement if there was a DB
 	return nil, &utils.ApplicationError{
 		Message:    fmt.Sprintf("%s is greater that %s", t1, t2),

@@ -21,7 +21,7 @@ const (
 	year  = 12 * month
 )
 
-func GetAllPeriodicTasks(w http.ResponseWriter, r *http.Request) {
+func GetAllTimestamps(w http.ResponseWriter, r *http.Request) {
 	// read query parameteres
 	queryParams := r.URL.Query()
 
@@ -111,11 +111,11 @@ func parseTimezone(tz string) (string, *utils.ApplicationError) {
 // parseInvocationPoints checks invocation points and calculates the timestamps, if any
 func parseInvocationPoints(t1, t2 string, period time.Duration) ([]string, *utils.ApplicationError) {
 
-	timestamps := []string{}
-
 	if utils.CheckInvocationPoint(t1) && utils.CheckInvocationPoint(t2) {
+		timestamps := []string{}
 
 		if utils.CheckInvocationSequence(t1, t2, UTC_FORM) {
+
 			// Valid periods should be 1h, 1d, 1mo, 1y
 			switch period {
 			case hour:
@@ -132,6 +132,13 @@ func parseInvocationPoints(t1, t2 string, period time.Duration) ([]string, *util
 				}
 
 				return timestamps, nil
+			// case week:
+			// 	timestamps, err := calculateTimestamps(t1, t2, period)
+			// 	if err != nil {
+			// 		return nil, err
+			// 	}
+
+			// 	return timestamps, nil
 			case month:
 				timestamps, err := calculateTimestamps(t1, t2, period)
 				if err != nil {
