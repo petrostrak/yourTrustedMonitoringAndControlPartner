@@ -12,9 +12,16 @@ import (
 
 const (
 	UTC_FORM = "20060102T150405Z"
+
+	// periods
+	hour  = 60 * time.Minute
+	day   = 24 * hour
+	week  = 7 * day
+	month = 4 * week
+	year  = 12 * month
 )
 
-func GetPeriodicTask(w http.ResponseWriter, r *http.Request) {
+func GetAllPeriodicTasks(w http.ResponseWriter, r *http.Request) {
 	// read query parameteres
 	queryParams := r.URL.Query()
 
@@ -24,7 +31,7 @@ func GetPeriodicTask(w http.ResponseWriter, r *http.Request) {
 
 	// 1h, 1d, 1mo, 1y
 	p, err := parsePeriod(period)
-	if p == "" || err != nil {
+	if p == -1 || err != nil {
 		utils.RespondError(w, err)
 		return
 	}
@@ -42,7 +49,10 @@ func GetPeriodicTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// pd, err := services.PeriodicTaskService.GetAllPeriodicTasks(t1, t2, period, tz)
+	// We would call GetAllPeriodicTasks from services to implement MVC if we were
+	// working with data persistence.
+	//
+	// pd, err := services.PeriodicTaskService.GetAllPeriodicTasks(t1, t2, p, tz)
 	// if err != nil {
 	// 	utils.RespondError(w, err)
 	// }
@@ -63,18 +73,18 @@ func GetPeriodicTask(w http.ResponseWriter, r *http.Request) {
 // /ptlist?period=1h&tz=Europe/Athens&t1=20210714T204603Z&t2=20210715T123456Z
 // helper function to check period
 // Valid periods should be 1h, 1d, 1mo, 1y
-func parsePeriod(p string) (string, *utils.ApplicationError) {
+func parsePeriod(p string) (time.Duration, *utils.ApplicationError) {
 	switch p {
 	case "1h":
-		return p, nil
+		return hour, nil
 	case "1d":
-		return p, nil
+		return day, nil
 	case "1mo":
-		return p, nil
+		return month, nil
 	case "1y":
-		return p, nil
+		return year, nil
 	default:
-		return "", &utils.ApplicationError{
+		return -1, &utils.ApplicationError{
 			Message:    fmt.Sprintf("could not parse period : %s", p),
 			StatusCode: http.StatusBadRequest,
 			Code:       "bad_request",
@@ -99,7 +109,7 @@ func parseTimezone(tz string) (string, *utils.ApplicationError) {
 }
 
 // helper function to check invocation points
-func parseInvocationPoints(t1, t2, period string) ([]string, *utils.ApplicationError) {
+func parseInvocationPoints(t1, t2 string, period time.Duration) ([]string, *utils.ApplicationError) {
 
 	timestamps := []string{}
 
@@ -108,29 +118,29 @@ func parseInvocationPoints(t1, t2, period string) ([]string, *utils.ApplicationE
 		if utils.CheckInvocationSequence(t1, t2, UTC_FORM) {
 			// Valid periods should be 1h, 1d, 1mo, 1y
 			switch period {
-			case "1h":
-				timestamps, err := calculateTimestampsPerHour(t1, t2)
+			case hour:
+				timestamps, err := calculateTimestamps(t1, t2, period)
 				if err != nil {
 					return nil, err
 				}
 
 				return timestamps, nil
-			case "1d":
-				timestamps, err := calculateTimestampsPerDay(t1, t2)
+			case day:
+				timestamps, err := calculateTimestamps(t1, t2, period)
 				if err != nil {
 					return nil, err
 				}
 
 				return timestamps, nil
-			case "1mo":
-				timestamps, err := calculateTimestampsPerMonth(t1, t2)
+			case month:
+				timestamps, err := calculateTimestamps(t1, t2, period)
 				if err != nil {
 					return nil, err
 				}
 
 				return timestamps, nil
-			case "1y":
-				timestamps, err := calculateTimestampsPerYear(t1, t2)
+			case year:
+				timestamps, err := calculateTimestamps(t1, t2, period)
 				if err != nil {
 					return nil, err
 				}
@@ -150,7 +160,7 @@ func parseInvocationPoints(t1, t2, period string) ([]string, *utils.ApplicationE
 }
 
 // calculateTimestampsPerHour appends the timestamps into the slice  for every hour
-func calculateTimestampsPerHour(t1, t2 string) ([]string, *utils.ApplicationError) {
+func calculateTimestamps(t1, t2 string, period time.Duration) ([]string, *utils.ApplicationError) {
 	timestamps := []string{}
 
 	ip1, err := utils.ParseStringToTime(UTC_FORM, t1)
@@ -163,7 +173,7 @@ func calculateTimestampsPerHour(t1, t2 string) ([]string, *utils.ApplicationErro
 		return nil, err
 	}
 
-	difference := ip2.Sub(*ip1).Round(60 * time.Minute).Hours()
+	difference := ip2.Sub(*ip1).Round(60*time.Minute) / period
 	timespace := int(difference)
 
 	h := ip1.Hour()
@@ -172,90 +182,6 @@ func calculateTimestampsPerHour(t1, t2 string) ([]string, *utils.ApplicationErro
 	for i := 0; i < timespace; i++ {
 		timestamp := time.Date(year, month, day, h+i, 0, 0, 0, time.UTC)
 		timestamps = append(timestamps, timestamp.Round(60*time.Minute).Format(UTC_FORM))
-	}
-
-	return timestamps, nil
-}
-
-// calculateTimestampsPerDay appends the timestamps into the slice  for every day
-func calculateTimestampsPerDay(t1, t2 string) ([]string, *utils.ApplicationError) {
-	timestamps := []string{}
-
-	ip1, err := utils.ParseStringToTime(UTC_FORM, t1)
-	if err != nil {
-		return nil, err
-	}
-
-	ip2, err := utils.ParseStringToTime(UTC_FORM, t2)
-	if err != nil {
-		return nil, err
-	}
-
-	difference := ip2.Sub(*ip1).Round(60*time.Minute).Hours() / 24
-	timespace := int(difference)
-
-	h := ip1.Hour()
-	year, month, day := ip1.Date()
-
-	for i := 0; i < timespace; i++ {
-		timestamp := time.Date(year, month, day, h, 0, 0, 0, time.UTC)
-		timestamps = append(timestamps, timestamp.AddDate(0, 0, i).Format(UTC_FORM))
-	}
-
-	return timestamps, nil
-}
-
-// calculateTimestampsPerMonth appends the timestamps into the slice  for every month
-func calculateTimestampsPerMonth(t1, t2 string) ([]string, *utils.ApplicationError) {
-	timestamps := []string{}
-
-	ip1, err := utils.ParseStringToTime(UTC_FORM, t1)
-	if err != nil {
-		return nil, err
-	}
-
-	ip2, err := utils.ParseStringToTime(UTC_FORM, t2)
-	if err != nil {
-		return nil, err
-	}
-
-	difference := ip2.Sub(*ip1).Round(60*time.Minute).Hours() / 720
-	timespace := int(difference)
-
-	h := ip1.Hour()
-	year, month, day := ip1.Date()
-
-	for i := 0; i < timespace; i++ {
-		timestamp := time.Date(year, month, day, h, 0, 0, 0, time.UTC)
-		timestamps = append(timestamps, timestamp.AddDate(0, i, 0).Format(UTC_FORM))
-	}
-
-	return timestamps, nil
-}
-
-// calculateTimestampsPerYear appends the timestamps into the slice  for every year
-func calculateTimestampsPerYear(t1, t2 string) ([]string, *utils.ApplicationError) {
-	timestamps := []string{}
-
-	ip1, err := utils.ParseStringToTime(UTC_FORM, t1)
-	if err != nil {
-		return nil, err
-	}
-
-	ip2, err := utils.ParseStringToTime(UTC_FORM, t2)
-	if err != nil {
-		return nil, err
-	}
-
-	difference := ip2.Sub(*ip1).Round(60*time.Minute).Hours() / 8640
-	timespace := int(difference)
-
-	h := ip1.Hour()
-	year, month, day := ip1.Date()
-
-	for i := 0; i < timespace; i++ {
-		timestamp := time.Date(year, month, day, h, 0, 0, 0, time.UTC)
-		timestamps = append(timestamps, timestamp.AddDate(0, i, 0).Format(UTC_FORM))
 	}
 
 	return timestamps, nil

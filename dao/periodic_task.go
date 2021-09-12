@@ -1,9 +1,11 @@
 package dao
 
+import "time"
+
 // PeriodicTask struct is the collection of attributes for periodic task
 type PeriodicTask struct {
-	Period   string `json:"period"`
-	Timezone string `json:"tz"`
+	Period   time.Duration `json:"period"`
+	Timezone string        `json:"tz"`
 	InvocationPoints
 	Timestamps []string `json:"timestamps"`
 }
