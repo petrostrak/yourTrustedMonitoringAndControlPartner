@@ -71,7 +71,7 @@ func GetAllPeriodicTasks(w http.ResponseWriter, r *http.Request) {
 }
 
 // /ptlist?period=1h&tz=Europe/Athens&t1=20210714T204603Z&t2=20210715T123456Z
-// helper function to check period
+// helper function to parse period and translate it into time.Duration
 // Valid periods should be 1h, 1d, 1mo, 1y
 func parsePeriod(p string) (time.Duration, *utils.ApplicationError) {
 	switch p {
@@ -108,7 +108,7 @@ func parseTimezone(tz string) (string, *utils.ApplicationError) {
 	return timeZone.String(), nil
 }
 
-// helper function to check invocation points
+// parseInvocationPoints checks invocation points and calculates the timestamps, if any
 func parseInvocationPoints(t1, t2 string, period time.Duration) ([]string, *utils.ApplicationError) {
 
 	timestamps := []string{}
@@ -159,7 +159,7 @@ func parseInvocationPoints(t1, t2 string, period time.Duration) ([]string, *util
 	}
 }
 
-// calculateTimestampsPerHour appends the timestamps into the slice  for every hour
+// calculateTimestampsPerHour appends the timestamps into the slice
 func calculateTimestamps(t1, t2 string, period time.Duration) ([]string, *utils.ApplicationError) {
 	timestamps := []string{}
 
@@ -173,6 +173,9 @@ func calculateTimestamps(t1, t2 string, period time.Duration) ([]string, *utils.
 		return nil, err
 	}
 
+	// The idea behind this algorithm is to take those two invocation points,
+	// find the time difference between them, and divide it with the given
+	// period in order to find the timestamps
 	difference := ip2.Sub(*ip1).Round(60*time.Minute) / period
 	timespace := int(difference)
 
