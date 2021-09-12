@@ -107,10 +107,11 @@ GET /ptlist?period=1w&tz=Europe/Athens&t1=20180214T204603Z&t2=20211115T123456Z
 ```
 
 #### Run without Docker:
-In the root directory of the project, type the following to fire up the server (don't forget to add port to listen to):
+In the root directory of the project, type the following to fire up the server:
 ```
 ./run.sh 
 ```
+ (don't forget to add port to listen to, for example : `./run.sh 8080`)
 
 #### Run with Docker:
 In the root directory of the project (where the dockerfile exists):
